@@ -19,7 +19,7 @@ app.all('/sign-up', require('./routes/auth/auth'));
 app.use(function(req, res, next) {
     var  err  =  new  Error('Not Found');
     err.status  =  404;
-    next(err);
+    next(err); 
 });
 
 let server = app.listen(process.env.PORT || port, function () {

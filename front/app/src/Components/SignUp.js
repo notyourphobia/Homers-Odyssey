@@ -12,7 +12,8 @@ export default class SignUp extends Component {
             passowrd: '',
             confirmPassowrd: '',
             firstName: '',
-            lastName: ''
+            lastName: '',
+            flash: ''
         };
         this.updateEmailField = this.updateEmailField.bind(this);
         this.updatePasswordField = this.updatePasswordField.bind(this);
@@ -55,6 +56,32 @@ export default class SignUp extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+
+        fetch("/auth/sign-up",
+            {
+                method: 'POST',
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                }),
+                body: JSON.stringify(this.state),
+            })
+            .then(res => res.json()
+            )
+            .then(
+                res => this.setState({ "flash": res.flash }),
+                err => this.setState({ "flash": err.flash })
+            )
+       
+
+        // .catch((res,err) => {
+        // if (err) {
+        //     res.status(500).json({ flash: err.message });
+        // }
+        // else {
+        //     res.status(200).json({ flash: "User has been signed up!" });
+        // }
+        // }) 
+
         console.log(JSON.stringify(this.state, 1, 1));
     }
 
