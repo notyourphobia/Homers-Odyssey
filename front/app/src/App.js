@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import SignUp from './Components/SignUp';
+import SignIn from './Components/SingIn';
+import Profile from './Components/Profile';
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "./App.css";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
 
 import { purple } from "@material-ui/core/colors";
 import { blue } from "@material-ui/core/colors/";
-
 
 const theme = createMuiTheme({
   palette: {
@@ -42,7 +44,19 @@ export default class App extends Component {
                   >
                     <img src="http://images.innoveduc.fr/react_odyssey_homer/wildhomer.png" alt='homerImg' />
                   </Grid>
-                  <SignUp />
+                  <BrowserRouter>
+                    <Switch>
+                    <Route exact path={['/', '/sign-in']}>
+                        <SignIn />
+                      </Route>
+                      <Route path='/sign-up'>
+                        <SignUp />
+                      </Route>
+                      <Route path='/profile'>
+                        <Profile />
+                      </Route>
+                    </Switch>
+                  </BrowserRouter>
                 </Grid>
               </Grid>
             </Paper>
