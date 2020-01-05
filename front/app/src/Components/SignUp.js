@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { TextField, Button } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
-import Grow from '@material-ui/core/Grow';
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+
 
 export default class SignUp extends Component {
     constructor(props) {
@@ -22,23 +24,7 @@ export default class SignUp extends Component {
         this.updateLastNameField = this.updateLastNameField.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        this.handleClose = this.handleClose.bind(this);
     }
-
-    handleClick = () => {
-        this.setState({
-            open: true
-        });
-    };
-
-    handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        this.setState({
-            open: false
-        });
-    };
 
     updateEmailField(event) {
         this.setState({
@@ -83,19 +69,27 @@ export default class SignUp extends Component {
                         email: this.state.email,
                         password: this.state.password,
                         name: this.state.firstName,
-                        lastname:this.state.lastName
+                        lastname: this.state.lastName
                     }),
                 })
                 .then(res => res.json()
                 )
                 .then(
-                    res => this.setState({ 'flash': res.flash }),
-                    err => this.setState({ 'flash': err.flash })
+                    res => this.setState({ 'flash': res.flash, open: true }),
+                    err => this.setState({ 'flash': err.flash, open: true  })
                 )
-        }else{
+        } else {
             alert('Passwords donnt match')
         }
     }
+
+    handleClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        this.setState({ open: false });
+    };
 
     render() {
         return (
@@ -116,6 +110,29 @@ export default class SignUp extends Component {
                         Submit
                     </Button>
                 </form>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left"
+                    }}
+                    open={this.state.open}
+                    autoHideDuration={3000}
+                    onClose={this.handleClose}
+                    ContentProps={{
+                        "aria-describedby": "message-id"
+                    }}
+                    message={<span id="message-id">{this.state.flash}</span>}
+                    action={[
+                        <IconButton
+                            key="close"
+                            aria-label="Close"
+                            color="inherit"
+                            onClick={this.handleClose}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    ]}
+                />
             </div>
         );
     }
