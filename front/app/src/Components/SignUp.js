@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-// import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { TextField, Button } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
+import Grow from '@material-ui/core/Grow';
 
 export default class SignUp extends Component {
     constructor(props) {
         super(props);
         this.state = {
             email: '',
-            passowrd: '',
-            confirmPassowrd: '',
+            password: '',
+            confirmPassword: '',
             firstName: '',
             lastName: '',
-            flash: ''
+            flash: '',
+            open: false
         };
         this.updateEmailField = this.updateEmailField.bind(this);
         this.updatePasswordField = this.updatePasswordField.bind(this);
@@ -21,24 +21,40 @@ export default class SignUp extends Component {
         this.updateFirstNameField = this.updateFirstNameField.bind(this);
         this.updateLastNameField = this.updateLastNameField.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.handleClose = this.handleClose.bind(this);
     }
+
+    handleClick = () => {
+        this.setState({
+            open: true
+        });
+    };
+
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        this.setState({
+            open: false
+        });
+    };
 
     updateEmailField(event) {
         this.setState({
             email: event.target.value
         })
-
     }
 
     updatePasswordField(event) {
         this.setState({
-            passowrd: event.target.value
+            password: event.target.value
         })
     }
 
     updateConfirmPasswordField(event) {
         this.setState({
-            confirmPassowrd: event.target.value
+            confirmPassword: event.target.value
         })
     }
 
@@ -56,83 +72,51 @@ export default class SignUp extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-
-        fetch("/auth/sign-up",
-            {
-                method: 'POST',
-                headers: new Headers({
-                    'Content-Type': 'application/json'
-                }),
-                body: JSON.stringify(this.state),
-            })
-            .then(res => res.json()
-            )
-            .then(
-                res => this.setState({ "flash": res.flash }),
-                err => this.setState({ "flash": err.flash })
-            )
-       
-
-        // .catch((res,err) => {
-        // if (err) {
-        //     res.status(500).json({ flash: err.message });
-        // }
-        // else {
-        //     res.status(200).json({ flash: "User has been signed up!" });
-        // }
-        // }) 
-
-        console.log(JSON.stringify(this.state, 1, 1));
+        if (this.state.password === this.state.confirmPassword) {
+            fetch('/auth/sign-up',
+                {
+                    method: 'POST',
+                    headers: new Headers({
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify({
+                        email: this.state.email,
+                        password: this.state.password,
+                        name: this.state.firstName,
+                        lastname:this.state.lastName
+                    }),
+                })
+                .then(res => res.json()
+                )
+                .then(
+                    res => this.setState({ 'flash': res.flash }),
+                    err => this.setState({ 'flash': err.flash })
+                )
+        }else{
+            alert('Passwords donnt match')
+        }
     }
 
     render() {
         return (
-            <Col className='sign-up'>
-                {this.state.log}
-                <h1>
-                    {JSON.stringify(this.state, 1, 1)}
-                </h1>
-                <Form className='sign-up-form' onSubmit={this.handleSubmit}>
-                    <Form.Group controlId='formGroupEmail'>
-                        <Form.Label column>
-                            Email Address
-                        </Form.Label>
-                        <Form.Control type="email" name="email" onChange={this.updateEmailField} />
-                    </Form.Group>
-
-                    <Form.Group controlId='formGroupPassword'>
-                        <Form.Label column>
-                            Password
-                        </Form.Label>
-                        <Form.Control type="password" name="password" onChange={this.updatePasswordField} />
-                    </Form.Group>
-
-                    <Form.Group controlId='formGroupConfirmPassword'>
-                        <Form.Label column>
-                            Confirm Password
-                        </Form.Label>
-                        <Form.Control type="password" name="password" onChange={this.updateConfirmPasswordField} />
-                    </Form.Group>
-
-                    <Form.Group controlId='formGrouFirstName'>
-                        <Form.Label column>
-                            First Name
-                        </Form.Label>
-                        <Form.Control type="text" name="firstName" onChange={this.updateFirstNameField} />
-                    </Form.Group>
-
-                    <Form.Group controlId='formGroupLastName'>
-                        <Form.Label column>
-                            Last Name
-                        </Form.Label>
-                        <Form.Control type="text" name="lasttName" onChange={this.updateLastNameField} />
-                    </Form.Group>
-
-                    <Button variant='primary' type='submit' size='md'>
+            <div className='sign-up'>
+                <h1>Sign Up</h1>
+                <form className='sign-up-form' onSubmit={this.handleSubmit} >
+                    <TextField type='email' name='email' defaultValue='' label='Email Address' onChange={this.updateEmailField} />
+                    <br /><br />
+                    <TextField type='password' name='password' defaultValue='' label='Password' onChange={this.updatePasswordField} />
+                    <br /><br />
+                    <TextField type='password' name='password' defaultValue='' label='Confirm Password' onChange={this.updateConfirmPasswordField} />
+                    <br /><br />
+                    <TextField type='text' name='firstName' defaultValue='' label='First Name' onChange={this.updateFirstNameField} />
+                    <br /><br />
+                    <TextField type='text' name='lasttName' defaultValue='' label='Last Name' onChange={this.updateLastNameField} />
+                    <br /><br />
+                    <Button variant='contained' color='primary' type='submit' onClick={this.GrowTransition}>
                         Submit
                     </Button>
-                </Form>
-            </Col>
+                </form>
+            </div>
         );
     }
 }

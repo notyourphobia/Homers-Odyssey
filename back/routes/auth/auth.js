@@ -10,13 +10,7 @@ connection.connect((err) => {
 
 //CREATE USER
 router.post('/sign-up', (req, res,next) => {
-  const userData = {
-    email: "my@email.com",
-    password: "myPassw0rd",
-    name: "James",
-    lastname: "Bond"
-  };
-  const query = connection.query('INSERT INTO users SET ?', userData, (error, result) => {
+  const query = connection.query('INSERT INTO users SET ?', req.body, (error, result) => {
     console.log(result);
     if (error) {
       res.status(500).json({ flash: error.message });
