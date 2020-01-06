@@ -58,6 +58,7 @@ export default class SignUp extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        console.log('123');
         if (this.state.password === this.state.confirmPassword) {
             fetch('/auth/sign-up',
                 {
@@ -107,7 +108,7 @@ export default class SignUp extends Component {
                     <TextField type='text' name='lasttName' defaultValue='' label='Last Name' onChange={this.updateLastNameField} />
                     <br /><br />
                     <Link to='/'>
-                        <Button variant='contained' color='primary' type='submit' onClick={this.GrowTransition}>
+                        <Button variant='contained' color='primary' type='submit' onClick={this.handleSubmit}>
                             Submit
                     </Button>
                     </Link>
