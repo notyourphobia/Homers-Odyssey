@@ -76,12 +76,17 @@ export default class SignUp extends Component {
                 .then(res => res.json()
                 )
                 .then(
-                    res => this.setState({ 'flash': res.flash, open: true }),
+                    res => {
+                        this.setState({ 'flash': res.flash, open: true })
+                        // this.props.history.replace('/')
+                    },
                     err => this.setState({ 'flash': err.flash, open: true })
                 )
         } else {
             alert('Passwords donnt match')
         }
+
+
     }
 
     handleClose = (event, reason) => {
@@ -96,7 +101,7 @@ export default class SignUp extends Component {
         return (
             <div className='sign-up'>
                 <h1>Sign Up</h1>
-                <form className='sign-up-form' onSubmit={this.handleSubmit} >
+                <form className='sign-up-form' onSubmit={this.handleSubmit} action='/' >
                     <TextField type='email' name='email' defaultValue='' label='Email Address' onChange={this.updateEmailField} />
                     <br /><br />
                     <TextField type='password' name='password' defaultValue='' label='Password' onChange={this.updatePasswordField} />
@@ -107,11 +112,11 @@ export default class SignUp extends Component {
                     <br /><br />
                     <TextField type='text' name='lasttName' defaultValue='' label='Last Name' onChange={this.updateLastNameField} />
                     <br /><br />
-                    <Link to='/'>
-                        <Button variant='contained' color='primary' type='submit' onClick={this.handleSubmit}>
-                            Submit
-                    </Button>
-                    </Link>
+                    {/* <Link to='/'> */}
+                    <Button variant='contained' color='primary' type='submit'>
+                        Submit
+                        </Button>
+                    {/* </Link> */}
                 </form>
                 <h3>Already have an account? Sing In<Link to='/sign-in' style={{ color: '#9900a7', textDecoration: 'none' }}> here</Link>!</h3>
                 <Snackbar

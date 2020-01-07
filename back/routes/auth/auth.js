@@ -6,6 +6,39 @@ const bcrypt = require('bcrypt')
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 
+const jwt = require('jsonwebtoken');
+const JWTStrategy = require('passport-jwt').Strategy;
+const ExtractJWT = require('passport-jwt').ExtractJwt;
+
+passport.use(new LocalStrategy(
+  {
+    usernameField: 'email',
+    passwordField: 'password',
+    session: false
+  },
+  function (email, password, cb) {
+    connection.query(`SELECT * from users WHERE email="${email}"`, (err, user) => {
+      if (err) { return cb(err); }
+      if (!user) { return cb(null, false, { flash: 'Invalid email' }); }
+      console.log(password, user[0].password)
+      let bRez = bcrypt.compareSync(password, user[0].password)
+      console.log(bRez)
+      if (!bRez) { return cb(null, false, { flash: 'Invalid password' }); }
+
+      return cb(null, user)
+    })
+  }
+));
+
+passport.use(new JWTStrategy({
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: 'pass'
+},
+  function (jwtPayload, cb) {
+    return cb(null, jwtPayload);
+  }
+));
+
 //CONNECT TO DATABASE
 connection.connect((err) => {
   if (err) throw err;
@@ -32,30 +65,39 @@ router.post('/sign-up', (req, res, next) => {
   })
 })
 
-router.post('/sign-in', function (req, res) {
+const verifyToken = (req, res, next) => {
+  const bearerHeader = req.headers['authorization'];
+  if (typeof bearerHeader !== 'undefined') {
+    const bearer = bearerHeader.split(' ');
+
+    const bearerToken = bearer[1];
+
+    req.token = bearerToken
+
+    next();
+  } else {
+    res.sendStatus(403)
+  }
+}
+
+router.post('/sign-in', verifyToken, (req, res) => {
   passport.authenticate('local', (err, user, info) => {
-    console.log(user)
+
+    const userData = {
+      email: user[0].email,
+      password: user[0].password
+    }
     if (err) { return res.status(500).send(err) }
     if (!user) { return res.status(400).json({ flash: "Email not found" }) }
-    return res.json({ user });
+    const token = jwt.sign(userData, 'pass');
+    return res.json({ user, token });
   })(req, res)
 });
 
-passport.use(new LocalStrategy(
-  {
-    usernameField: 'email',
-    passwordField: 'password',
-    // session: false
-  },
-  function (email, password, cb) {
-    connection.query(`SELECT * from users WHERE email="${email}"`, (err, user) => {
-      if (err) { return cb(err); }
-      if (!user) { return cb(null, false, { flash: 'Invalid email' }); }
-      if (user.password != password) { return cb(null, false, { flash: 'Invalid password' }); }
-      return cb(null, user)
-    })
-  }
-));
+
+
+
+
 
 
 module.exports = router;
