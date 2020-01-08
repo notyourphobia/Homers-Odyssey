@@ -5,12 +5,15 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { Link } from "react-router-dom";
 
-export default class SignIn extends Component {
+import { connect } from 'react-redux';
+
+class SignIn extends Component {
     constructor(props) {
         super(props);
         this.state = {
             email: '',
             password: '',
+            token: '',
             flash: '',
             open: false
         };
@@ -49,7 +52,19 @@ export default class SignIn extends Component {
             .then(res => res.json()
             )
             .then(
-                res => this.setState({ 'flash': res.flash, open: true }),
+                res => {
+                    this.setState({ 'flash': res.flash, open: true })
+                    console.log(JSON.stringify(res));
+                    this.props.dispatch(
+                        {
+                            type: "CREATE_SESSION",
+                            user: res.user,
+                            token: res.token,
+                            flash: res.flash
+                        }
+                    )
+                    // this.props.router.push('/profile')
+                },
                 err => this.setState({ 'flash': err.flash, open: true })
             )
     }
@@ -63,19 +78,20 @@ export default class SignIn extends Component {
     };
 
     render() {
+        console.log(this.props.flash)
         return (
             <div className='sign-in'>
                 <h1>Sign In</h1>
-                <form className='sign-in-form' onSubmit={this.handleSubmit} >
+                <form className='sign-in-form' onSubmit={this.handleSubmit} action='/profile' >
                     <TextField type='email' name='email' defaultValue='' label='Email Address' onChange={this.updateEmailField} />
                     <br /><br />
                     <TextField type='password' name='password' defaultValue='' label='Password' onChange={this.updatePasswordField} />
                     <br /><br />
-                    <Link to='/profile'>
-                        <Button variant='contained' color='primary' type='submit' onClick={this.GrowTransition}>
-                            Submit
-                        </Button>
-                    </Link>
+                    {/* <Link to='/profile'> */}
+                    <Button variant='contained' color='primary' type='submit' onClick={this.GrowTransition}>
+                        Submit
+                    </Button>
+                    {/* </Link> */}
                 </form>
 
                 <h3>
@@ -93,7 +109,7 @@ export default class SignIn extends Component {
                     ContentProps={{
                         "aria-describedby": "message-id"
                     }}
-                    message={<span id="message-id">{this.state.flash}</span>}
+                    message={<span id="message-id">{this.props.flash}</span>}
                     action={[
                         <IconButton
                             key="close"
@@ -109,3 +125,15 @@ export default class SignIn extends Component {
         );
     }
 }
+
+
+function mapStateToProps(state) {
+    return {
+        flash: state.auth.flash,
+        token: state.auth.token
+    }
+};
+
+export default connect(mapStateToProps)(SignIn)
+
+

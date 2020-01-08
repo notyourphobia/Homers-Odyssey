@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import SignUp from './Components/SignUp';
-import SignIn from './Components/SingIn';
-import Profile from './Components/Profile';
+import SignUp from './Containers/SignUp';
+import SignIn from './Containers/SingIn';
+import Profile from './Containers/Profile';
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "./App.css";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -52,9 +52,7 @@ export default class App extends Component {
                       <Route path='/sign-up'>
                         <SignUp />
                       </Route>
-                      <Route path='/profile'>
-                        <Profile />
-                      </Route>
+                      <Route path='/profile'  component={requireAuth(Profile)} />
                     </Switch>
                   </BrowserRouter>
                 </Grid>

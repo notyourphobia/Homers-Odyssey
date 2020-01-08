@@ -18,11 +18,10 @@ passport.use(new LocalStrategy(
   },
   function (email, password, cb) {
     connection.query(`SELECT * from users WHERE email="${email}"`, (err, user) => {
+      console.log(password)
       if (err) { return cb(err); }
       if (!user) { return cb(null, false, { flash: 'Invalid email' }); }
-      console.log(password, user[0].password)
       let bRez = bcrypt.compareSync(password, user[0].password)
-      console.log(bRez)
       if (!bRez) { return cb(null, false, { flash: 'Invalid password' }); }
 
       return cb(null, user)
@@ -56,7 +55,6 @@ router.post('/sign-up', (req, res, next) => {
   }
 
   const query = connection.query('INSERT INTO users SET ?', userData, (error, result) => {
-    console.log(result);
     if (error) {
       res.status(500).json({ flash: error.message });
     } else {
@@ -65,24 +63,13 @@ router.post('/sign-up', (req, res, next) => {
   })
 })
 
-const verifyToken = (req, res, next) => {
-  const bearerHeader = req.headers['authorization'];
-  if (typeof bearerHeader !== 'undefined') {
-    const bearer = bearerHeader.split(' ');
 
-    const bearerToken = bearer[1];
 
-    req.token = bearerToken
-
-    next();
-  } else {
-    res.sendStatus(403)
-  }
-}
-
-router.post('/sign-in', verifyToken, (req, res) => {
+router.post('/sign-in', (req, res) => {
   passport.authenticate('local', (err, user, info) => {
-
+    console.log(err);
+    console.log(user)
+    // console.log(info.flash)
     const userData = {
       email: user[0].email,
       password: user[0].password
@@ -90,7 +77,7 @@ router.post('/sign-in', verifyToken, (req, res) => {
     if (err) { return res.status(500).send(err) }
     if (!user) { return res.status(400).json({ flash: "Email not found" }) }
     const token = jwt.sign(userData, 'pass');
-    return res.json({ user, token });
+    return res.json({ user, token, flash: 'Sign in succesful!' });
   })(req, res)
 });
 
