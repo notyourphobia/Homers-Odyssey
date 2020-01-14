@@ -53,7 +53,6 @@ router.post('/sign-up', (req, res, next) => {
     name: req.body.name,
     lastname: req.body.lastname
   }
-
   const query = connection.query('INSERT INTO users SET ?', userData, (error, result) => {
     if (error) {
       res.status(500).json({ flash: error.message });
@@ -63,13 +62,12 @@ router.post('/sign-up', (req, res, next) => {
   })
 })
 
-
-
 router.post('/sign-in', (req, res) => {
   passport.authenticate('local', (err, user, info) => {
     console.log(err);
     console.log(user)
     // console.log(info.flash)
+    
     const userData = {
       email: user[0].email,
       password: user[0].password
@@ -80,11 +78,5 @@ router.post('/sign-in', (req, res) => {
     return res.json({ user, token, flash: 'Sign in succesful!' });
   })(req, res)
 });
-
-
-
-
-
-
 
 module.exports = router;

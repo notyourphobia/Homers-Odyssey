@@ -14,6 +14,29 @@ export default class Profile extends Component {
         };
 
     }
+    componentDidMount() {
+        if (this.props.token){
+        fetch('/profile', {
+            headers: {
+                'Authorization': 'Bearer ' + this.props.token,
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json()
+                }
+                else {
+                    throw new Error(res.statusText)
+                }
+            })
+            .then(res => { this.setState({ profile: {
+                email: res.email,
+                name: res.name,
+                lastname: res.lastname
+            } }) })
+            .catch()
+        }
+    }
 
     render() {
         return (

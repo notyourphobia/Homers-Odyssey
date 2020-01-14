@@ -63,7 +63,7 @@ class SignIn extends Component {
                             flash: res.flash
                         }
                     )
-                    // this.props.router.push('/profile')
+                    this.props.history.replace("/profile")
                 },
                 err => this.setState({ 'flash': err.flash, open: true })
             )

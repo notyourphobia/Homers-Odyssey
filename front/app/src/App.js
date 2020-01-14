@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import SignUp from './Containers/SignUp';
 import SignIn from './Containers/SingIn';
 import Profile from './Containers/Profile';
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import requireAuth from './hoc/requireAuth';
+import requireNotAuth from './hoc/requireNotAuth';
+
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import "./App.css";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Grid, Paper } from "@material-ui/core";
@@ -46,13 +49,10 @@ export default class App extends Component {
                   </Grid>
                   <BrowserRouter>
                     <Switch>
-                    <Route exact path={['/', '/sign-in']}>
-                        <SignIn />
-                      </Route>
-                      <Route path='/sign-up'>
-                        <SignUp />
-                      </Route>
-                      <Route path='/profile'  component={requireAuth(Profile)} />
+                      <Redirect exact from='/' to='/profile' />
+                      <Route path={'/sign-in'} component={requireNotAuth(SignIn)} />
+                      <Route path='/sign-up' component={SignUp} />
+                      <Route path='/profile' component={requireAuth(Profile)} />
                     </Switch>
                   </BrowserRouter>
                 </Grid>
@@ -60,7 +60,7 @@ export default class App extends Component {
             </Paper>
           </Grid>
         </Grid>
-      </MuiThemeProvider>
+      </MuiThemeProvider >
     );
   }
 }
