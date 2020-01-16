@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
 const connection = require('../../helpers/db');
+
 const bcrypt = require('bcrypt')
 
 const passport = require('passport')
@@ -17,6 +19,7 @@ passport.use(new LocalStrategy(
     session: false
   },
   function (email, password, cb) {
+    
     connection.query(`SELECT * from users WHERE email="${email}"`, (err, user) => {
       console.log(password)
       if (err) { return cb(err); }
